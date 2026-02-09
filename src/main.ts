@@ -20,9 +20,9 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "http://localhost:3000",
-      "https://almafuerte-bgxw.vercel.app",
-      "https://almafuerte-bgxw.vercel.app/",
-      "https://almafuerte.vercel.app/"
+      "https://almafuerte.vercel.app/",
+      "https://almafuerte-admin.vercel.app",
+      "https://*.vercel.app",            
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
