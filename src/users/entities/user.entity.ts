@@ -1,10 +1,14 @@
+// src/users/entities/user.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Entity('users')
 export class User {
@@ -32,10 +36,30 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Método para comparar passwords (si usas bcrypt)
-  async comparePassword(password: string): Promise<boolean> {
-    // Aquí iría la lógica de comparación con bcrypt
-    // Por ahora retornamos true para que funcione
-    return true;
+  // Hash password antes de insertar
+  @BeforeInsert()
+  async hashPassword() {
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  }
+
+  // Hash password antes de actualizar si cambió
+  @BeforeUpdate()
+  async hashPasswordIfChanged() {
+    // Necesitarías una forma de saber si el password cambió
+    // Por simplicidad, siempre re-hasheamos
+    if (this.password && !this.password.startsWith('$2b$')) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  }
+
+  async comparePassword(attempt: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(attempt, this.password);
+    } catch (error) {
+      console.error('Error comparing passwords:', error);
+      return false;
+    }
   }
 }
