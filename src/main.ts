@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { ValidationPipe } from "@nestjs/common";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,19 +14,24 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-    }),
+    })
   );
 
   app.enableCors({
-    origin: ['http://localhost:3000'],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    origin: [
+      "http://localhost:3000",
+      "https://almafuerte-bgxw.vercel.app",
+      "https://almafuerte-bgxw.vercel.app/",
+      "https://almafuerte.vercel.app/"
+    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization',
-      'X-Auth-Token',
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+      "X-Auth-Token",
     ],
     credentials: true,
     preflightContinue: false,
