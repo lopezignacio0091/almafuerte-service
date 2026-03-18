@@ -14,16 +14,33 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-    })
+    }),
   );
 
+  // Default origins always allowed (local dev + known production URLs)
+  const defaultOrigins = [
+    "http://localhost:3000",
+    "https://almafuerte.vercel.app",
+    "https://almafuerte-admin.vercel.app",
+    "https://almafuerte-ruddy.vercel.app",
+  ];
+
+  // Extra origins from env variable (comma-separated), e.g. for Vercel preview URLs
+  const extraOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",")
+        .map((o) => o.trim())
+        .filter(Boolean)
+    : [];
+
+  const allowedOrigins = [...new Set([...defaultOrigins, ...extraOrigins])];
+
   app.enableCors({
-    origin: [
-      "http://localhost:3000",
-      "https://almafuerte.vercel.app/",
-      "https://almafuerte-admin.vercel.app",
-      "https://*.vercel.app",            
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. curl, Postman, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: origin '${origin}' not allowed`));
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Origin",
